@@ -26,12 +26,12 @@ variable "headless" {
 
 variable "iso_checksum" {
   type    = string
-  default = "sha256:7892981e1da216e79fb3a1536ce5ebab157afdd20048fe458f2ae34fbc26c19b"
+  default = "sha256:e482910626b30f9a7de9b0cc142c3d4a079fbfa96110083be1d0b473671ce08d"
 }
 
 variable "iso_url" {
   type    = string
-  default = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.3.0-amd64-netinst.iso"
+  default = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.6.0-amd64-netinst.iso"
 }
 
 variable "name" {
@@ -105,8 +105,4 @@ build {
     inline          = ["apt -y remove ansible", "apt-get clean", "apt-get -y autoremove --purge"]
   }
 
-  post-processor "shell-local" {
-    environment_vars = ["IMAGE_NAME=${var.name}", "IMAGE_VERSION=${var.version}", "DESTINATION_SERVER=${var.destination_server}"]
-    script           = "scripts/push-image.sh"
-  }
 }
