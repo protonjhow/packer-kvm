@@ -5,3 +5,10 @@
   become: yes
   roles:
     - common
+
+- name: Install VPP 
+  hosts: localhost
+  gather_facts: True
+  become: yes
+  roles:
+    - vpp-install
