@@ -96,7 +96,7 @@ build {
 
   provisioner "shell" {
     execute_command = "{{ .Vars }} bash '{{ .Path }}'"
-    inline          = ["echo \"deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main\" >> /etc/apt/sources.list", "apt -y install dirmngr", "apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367", "apt-get update", "apt -y install ansible"]
+    inline          = ["echo \"deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main\" >> /etc/apt/sources.list", "apt -y install dirmngr", "apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367", "apt-get update", "apt -y install ansible", "ansible-galaxy install mrlesmithjr.frr"]
   }
 
   provisioner "ansible-local" {

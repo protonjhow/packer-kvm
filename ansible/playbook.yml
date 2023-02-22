@@ -12,3 +12,10 @@
   become: yes
   roles:
     - vpp-install
+
+- name: Install FRR
+  hosts: localhost
+  roles:
+    - mrlesmithjr.frr
+  vars:
+    frr_version: 8.4.2
