@@ -1,0 +1,12 @@
+comment { Create a loopback interface }
+create loopback interface instance 0
+lcp create loop0 host-if loop0
+set interface state loop0 up
+set interface ip address loop0 2001:db8::1/64
+set interface ip address loop0 192.0.2.1/24
+
+comment { Create Linux Control Plane interfaces }
+lcp create GigabitEthernet10/0/0 host-if e0
+lcp create GigabitEthernet10/0/1 host-if e1
+lcp create GigabitEthernet10/0/2 host-if e2
+lcp create GigabitEthernet10/0/3 host-if e3

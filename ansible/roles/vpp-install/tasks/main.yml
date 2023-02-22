@@ -1,0 +1,107 @@
+---
+- name: make a vpp group
+  become: yes
+  ansible.builtin.group: 
+    name: vpp
+    system: true
+
+- name: make a vpp user
+  become: yes
+  ansible.builtin.user: 
+    name: vpp
+    group: vpp
+    system: true
+
+- name: install vpp packages
+  become: yes
+  apt: 
+    deb: "{{ item }}"
+  with_items: 
+    - "/tmp/libvppinfra_{{ vpp_version }}-release_amd64.deb"
+    - "/tmp/libvppinfra-dev_{{ vpp_version }}-release_amd64.deb"
+    - "/tmp/vpp_{{ vpp_version }}-release_amd64.deb"
+    - "/tmp/vpp-dbg_{{ vpp_version }}-release_amd64.deb"
+    - "/tmp/vpp-dev_{{ vpp_version }}-release_amd64.deb"
+    - "/tmp/vpp-plugin-core_{{ vpp_version }}-release_amd64.deb"
+    - "/tmp/vpp-plugin-devtools_{{ vpp_version }}-release_amd64.deb"
+    - "/tmp/vpp-plugin-dpdk_{{ vpp_version }}-release_amd64.deb"
+    - "/tmp/python3-vpp-api_{{ vpp_version }}-release_amd64.deb"
+  
+- name: deploy vpp sysctl config
+  become: yes 
+  ansible.builtin.template:
+    src: 80-vpp.conf.j2
+    dest: /etc/sysctl.d/80-vpp.conf
+    owner: root
+    group: vpp
+    mode: '0664'
+
+- name: deploy vpp-netlink sysctl config
+  become: yes
+  ansible.builtin.template:
+    src: 81-vpp-netlink.conf.j2
+    dest: /etc/sysctl.d/81-vpp-netlink.conf
+    owner: root
+    group: vpp
+    mode: '0664'
+
+- name: reload sysctl 
+  become: yes
+  ansible.builtin.command: sysctl -p 
+
+- name: deploy netns-dataplane systemd unit file
+  become: yes
+  ansible.builtin.template: 
+    src: netns-dataplane.service.j2
+    dest: /usr/lib/systemd/system/netns-dataplane.service
+    owner: root
+    group: vpp
+    mode: '0664'
+
+- name: Reload systemd
+  become: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Enable netns-dataplane service and ensure it is not masked
+  become: yes
+  ansible.builtin.systemd:
+    name: netns-dataplane
+    state: started
+    enabled: true
+    masked: false
+
+- name: Create VPP config dir
+  become: yes
+  ansible.builtin.file:
+    path: /etc/vpp
+    state: directory
+    owner: vpp
+    group: vpp
+    mode: '0664'
+
+- name: deploy vpp service startup config
+  become: yes
+  ansible.builtin.template:
+    src: startup.conf.j2
+    dest: /etc/vpp/startup.conf.j2
+    owner: vpp
+    group: vpp
+    mode: '0664'
+
+- name: deploy vpp interface bootstrap config
+  become: yes
+  ansible.builtin.template:
+    src: bootstrap.vpp.j2
+    dest: /etc/vpp/bootstrap.vpp.j2
+    owner: vpp
+    group: vpp
+    mode: '0664'
+
+- name: Enable vpp service and ensure it is not masked
+  become: yes
+  ansible.builtin.systemd:
+    name: vpp
+    state: restarted
+    enabled: true
+    masked: false
