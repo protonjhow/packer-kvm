@@ -13,9 +13,20 @@
   roles:
     - vpp-install
 
+- name: temp hack patch ansible-frr role 
+  hosts: localhost
+  gather_facts: false
+  become: yes
+  tasks: 
+    - name: rename python dep
+      ansible.builtin.lineinfile:
+        path: /root/.ansible/roles/mrlesmithjr.frr/vars/debian.yml
+        regexp: '.*ipaddr$'
+        line: '  - python3-ipaddr'
+
 - name: Install FRR
   hosts: localhost
   roles:
     - mrlesmithjr.frr
   vars:
-    frr_version: 8.4.2
+          #frr_version: 8.4.2
